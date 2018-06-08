@@ -1,6 +1,6 @@
 # Vue + Element 后台管理模板 #
 # 致谢 #
-#      站在巨人之上，我们才能走得更远。项目中使用和借鉴了以下开源框架的实现方法 一并致谢#
+#      站在巨人之上，我们才能走得更远。项目中使用和借鉴了以下开源框架的实现方法 一并致谢
 # 踩着前辈的肩膀上改了点点  @https://github.com/lin-xin #
 基于Vue.js 2.x系列 + Element UI 的后台管理系统解决方案。[线上地址-这个地址是原作者的](http://blog.gdfengshuo.com/example/work/)
 
