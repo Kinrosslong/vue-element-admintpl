@@ -7,15 +7,22 @@ const path = require('path')
 module.exports = {
   dev: {
 
-    // Paths
+    // Paths  这里是修改跨域问题
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      // '/api':{
+      //     target:'http://jsonplaceholder.typicode.com',
+      //     changeOrigin:true,
+      //     pathRewrite:{
+      //         '/api':''
+      //     }
+      // },
       '/api':{
-          target:'http://jsonplaceholder.typicode.com',
-          changeOrigin:true,
-          pathRewrite:{
-              '/api':''
+          target:'http://myproject.com:9090/',
+          changeOrigin : true,
+          pathRewrite : {
+              '^/api' : '/'
           }
       },
       '/ms':{
@@ -23,7 +30,7 @@ module.exports = {
           changeOrigin: true
       }
     },
-    // Various Dev Server settings
+    // Various Dev Server settings  设置端口和域名
     host: 'localhost', // can be overwritten by process.env.HOST
     port: 8025, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: true,

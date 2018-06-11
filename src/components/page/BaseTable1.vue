@@ -73,6 +73,7 @@
         data() {
             return {
                 url: './static/vuetable.json',
+                tablelistUrl: '/api/acticleInit?pagenum=1&pagesize=5',
                 tableData: [],
                 cur_page: 1,
                 multipleSelection: [],
@@ -123,17 +124,26 @@
             // 获取 easy-mock 的模拟数据
             getData() {
                 // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
-                if (process.env.NODE_ENV === 'development') {
-                    this.url = '/ms/table/list';
-                };
-                this.$axios.post(this.url, {
-                    page: this.cur_page
-                }).then((res) => {
-                    this.tableData = res.data.list;
-                })
+                // if (process.env.NODE_ENV === 'development') {
+                //     this.url = '/ms/table/list';
+                // };
+                // this.$axios.post(this.url, {
+                //     page: this.cur_page
+                // }).then((res) => {
+                //     this.tableData = res.data.list;
+                // })
+                // axios.get('/api/acticleInit',{params:{pagenum:pagenum, pagesize:this.pagesize}}).then(res => {
+                //     console.log(res);
+                //     this.total = res.data.total;
+                //     this.lists = res.data.list;
+                // })
+                this.$axios.get(this.tablelistUrl).then(res => {
+                    console.log(res);
+                });
             },
             search() {
-                this.is_search = true;
+                // this.is_search = true;
+                this.getData();
             },
             formatter(row, column) {
                 return row.address;
