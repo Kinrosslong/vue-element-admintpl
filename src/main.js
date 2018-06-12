@@ -11,6 +11,7 @@ import "./assets/icon/iconfont.css"; //使用自己的icon图标
 Vue.use(ElementUI, { size: 'small' });
 Vue.prototype.$axios = axios; //axios不支持vue.use()方式声明使用 在其他vue组件中就可以this.$axios调用使用
 
+
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
     const role = localStorage.getItem('ms_username');

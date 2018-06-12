@@ -7,33 +7,22 @@ const path = require('path')
 module.exports = {
   dev: {
 
-    // Paths  这里是修改跨域问题
+    // Paths 配置跨域地址
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      // '/api':{
-      //     target:'http://jsonplaceholder.typicode.com',
-      //     changeOrigin:true,
-      //     pathRewrite:{
-      //         '/api':''
-      //     }
-      // },
       '/api':{
-          target:'http://myproject.com:9090/',
-          changeOrigin : true,
-          pathRewrite : {
-              '^/api' : '/'
+          target: 'http://myproject.com:9090/api/',
+          changeOrigin: true,
+          pathRewrite:{
+              '/api': ''
           }
-      },
-      '/ms':{
-          target: 'https://www.easy-mock.com/mock/592501a391470c0ac1fab128',
-          changeOrigin: true
       }
     },
-    // Various Dev Server settings  设置端口和域名
+    // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
-    port: 8025, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
-    autoOpenBrowser: true,
+    port: 8888, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-

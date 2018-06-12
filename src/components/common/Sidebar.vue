@@ -47,8 +47,8 @@
                             },
                             {
                                 icon: 'ali-el-icon-text',
-                                index: 'table1',
-                                title: '表格1'
+                                index: 'article',
+                                title: '文章列表'
                             }
                         ]
                     },

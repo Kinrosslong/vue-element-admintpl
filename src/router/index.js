@@ -25,9 +25,9 @@ export default new Router({
                     meta: { title: '基础表格' }
                 },
                 {
-                    path: '/table1',
-                    component: resolve => require(['../components/page/BaseTable1.vue'], resolve),
-                    meta: { title: '基础表格1' }
+                    path: '/article',
+                    component: resolve => require(['../components/page/article.vue'], resolve),
+                    meta: { title: '文章' }
                 },
                 {
                     path: '/tabs',
