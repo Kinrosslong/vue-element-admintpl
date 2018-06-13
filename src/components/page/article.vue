@@ -1,17 +1,8 @@
 <template>
     <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-tickets"></i> 基础表格</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <!-- <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
-                    <el-option key="1" label="广东省" value="广东省"></el-option>
-                    <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                </el-select> -->
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
@@ -45,13 +36,16 @@
         <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
             <el-form ref="form" :model="form" label-width="50px">
                 <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                    <el-date-picker type="date" placeholder="选择日期" 
+                    v-model="form.created_at" value-format="yyyy-MM-dd"
+                    style="width: 100%;" format="yyyy 年 MM 月 dd 日">
+                    </el-date-picker>
                 </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="标题">
+                    <el-input v-model="form.title"></el-input>
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
+                <el-form-item label="内容">
+                    <el-input v-model="form.content"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -89,9 +83,10 @@
                 editVisible: false,
                 delVisible: false,
                 form: {
-                    name: '',
-                    date: '',
-                    address: ''
+                    id: '',
+                    title: '',
+                    content: '',
+                    created_at: ''
                 },
                 idx: -1
             }
@@ -121,47 +116,53 @@
             }
         },
         methods: {
-            // 分页导航
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
 
             // 获取文章的模拟数据 这里的api 是node的请求地址
             getData(pagenum) {
- 
-                this.$axios.get('/api/acticleInit', {params:{pagenum:pagenum, pagesize:this.pagesize}}).then(res => {
+                let params = {
+                    pagenum: pagenum, 
+                    pagesize: this.pagesize,
+                    select_word: this.select_word 
+                }
+                this.$axios.get('/api/acticleList', {params:params}).then(res => {
                     this.total = res.data.total;
                     this.tableData = res.data.list;
+                }).catch(error => {
+                    console.log(error)
                 });
             },
 
+            //按照条件搜索
             search() {
-                // this.is_search = true;
-                // this.getData(1);
+                this.getData();
             },
+            //这个是element的一个方法
             formatter(row, column) {
                 return row.address;
             },
             filterTag(value, row) {
                 return row.tag === value;
             },
+
+            //编辑
             handleEdit(index, row) {
 
-                console.log(index);
                 this.idx = index;
-                // const item = this.tableData[index];
-                // this.form = {
-                //     name: item.name,
-                //     date: item.date,
-                //     address: item.address
-                // }
-                // this.editVisible = true;
+                const item = this.tableData[index];
+                this.form = {
+                    title: item.title,
+                    content: item.content,
+                    id: item.id,
+                    created_at: item.created_at
+                }
+                this.editVisible = true;
             },
+            //删除
             handleDelete(index, row) {
                 this.idx = index;
                 this.delVisible = true;
             },
+            //删除全部
             delAll() {
                 const length = this.multipleSelection.length;
                 let str = '';
@@ -179,8 +180,18 @@
             // 保存编辑
             saveEdit() {
                 this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                console.log(this.form);
+                this.form = {};
+                this.$axios.post('/api/saveEdit', this.form).then(res => {
+                    console.log();
+                    // if(res.code) {
+                    //     this.editVisible = false;
+                    //     this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                    // } else {
+                    //     this.$message.error(`修改第 ${this.idx+1} 失败`);
+                    // }
+                });
+               
             },
             // 确定删除
             deleteRow(){
