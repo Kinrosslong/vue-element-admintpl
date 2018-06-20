@@ -2,6 +2,7 @@
     <div class="table">
         <div class="container">
             <div class="handle-box">
+                <el-button type="success" icon="el-icon-plus"  @click="articleAdd" plain>添加</el-button>
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
@@ -33,24 +34,23 @@
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
+        <el-dialog title="编辑" :visible.sync="editVisible" width="30%" @close="handleClose">
+            <el-form ref="form" :model="form" label-width="50px" :rules="rules">
+                <el-form-item label="日期" prop="created_at">
                     <el-date-picker type="date" placeholder="选择日期" 
-                    v-model="form.created_at" value-format="yyyy-MM-dd"
-                    style="width: 100%;" format="yyyy 年 MM 月 dd 日">
+                    v-model="form.created_at" style="width: 100%;" value-format="yyyy-MM-dd" >
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="标题">
+                <el-form-item label="标题" prop="title">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
-                <el-form-item label="内容">
+                <el-form-item label="内容" prop="content">
                     <el-input v-model="form.content"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                <el-button @click="resetForm('form')">取 消</el-button>
+                <el-button type="primary" @click="saveEdit('form')">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -88,9 +88,23 @@
                     content: '',
                     created_at: ''
                 },
-                idx: -1
+                idx: -1,
+                rules: { //element 验证规则  trigger: 'blur' 和 trigger: 'change'这两个是有区别的
+                    title: [
+                        { required: true, message: '请输入文章标题', trigger: 'blur' },
+                        { min: 3, max: 55, message: '长度在 3 到 55 个字符', trigger: 'blur' }
+                    ],
+                    content: [
+                        { required: true, message: '请输入文章内容', trigger: 'blur' },
+                        { min: 5, message: '长度不能小于5字符', trigger: 'blur' }
+                    ],
+                    created_at: [
+                        { type: 'string', required: true, message: '请选择日期', trigger: 'blur' }
+                    ],
+                },
             }
         },
+        
         created() {
             this.getData(1);
         },
@@ -134,7 +148,7 @@
 
             //按照条件搜索
             search() {
-                this.getData();
+                this.getData(1);
             },
             //这个是element的一个方法
             formatter(row, column) {
@@ -142,6 +156,11 @@
             },
             filterTag(value, row) {
                 return row.tag === value;
+            },
+              //添加文章
+            articleAdd() {
+                this.form = { id: '', title: '', content: '', created_at: ''};
+                this.editVisible = true;
             },
 
             //编辑
@@ -159,7 +178,7 @@
             },
             //删除
             handleDelete(index, row) {
-                this.idx = index;
+                this.idx = row.id;
                 this.delVisible = true;
             },
             //删除全部
@@ -178,27 +197,53 @@
                 console.log(val);
             },
             // 保存编辑
-            saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                console.log(this.form);
-                this.form = {};
-                this.$axios.post('/api/saveEdit', this.form).then(res => {
-                    console.log();
-                    // if(res.code) {
-                    //     this.editVisible = false;
-                    //     this.$message.success(`修改第 ${this.idx+1} 行成功`);
-                    // } else {
-                    //     this.$message.error(`修改第 ${this.idx+1} 失败`);
-                    // }
+            saveEdit(form) {
+                console.log(this.form)
+                //element ui 表单验证
+                this.$refs[form].validate((valid) => {
+                    if (valid) { //验证通过
+                        this.$message.success('success');
+                        this.$axios.post('/api/articleAdd', this.form).then(res => {
+                            // console.log(res); //测试laravel编辑中的表单验证
+                            // if(res.code) {
+                            //     this.editVisible = false;
+                            //     this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                            // } else {
+                            //     this.$message.error(`修改第 ${this.idx+1} 失败`);
+                            // }
+                        }).catch((error) => {
+                            console.log(error) //Logs a string: Error: Request failed with status code 404
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
                 });
-               
             },
+
+            //取消即是重置
+            resetForm(form) {
+                this.editVisible = false;
+                this.$refs[form].resetFields();
+            },
+
+            //清除表单样式 也就是重置
+            handleClose() {
+               this.$refs['form'].resetFields();
+            },
+
             // 确定删除
             deleteRow(){
-                this.tableData.splice(this.idx, 1);
-                this.$message.success('删除成功');
-                this.delVisible = false;
-            }
+                this.$axios.post('/api/articleDel', {id: this.idx}).then(res => {
+                    console.log(res);
+                    if(res) {
+                        this.$message.success('删除成功');
+                        this.delVisible = false;
+                    } else {
+
+                    }
+                });
+            },
         }
     }
 
