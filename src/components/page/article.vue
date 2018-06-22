@@ -198,21 +198,28 @@
             },
             // 保存编辑
             saveEdit(form) {
-                console.log(this.form)
                 //element ui 表单验证
                 this.$refs[form].validate((valid) => {
                     if (valid) { //验证通过
-                        this.$message.success('success');
                         this.$axios.post('/api/articleAdd', this.form).then(res => {
-                            // console.log(res); //测试laravel编辑中的表单验证
-                            // if(res.code) {
-                            //     this.editVisible = false;
-                            //     this.$message.success(`修改第 ${this.idx+1} 行成功`);
-                            // } else {
-                            //     this.$message.error(`修改第 ${this.idx+1} 失败`);
-                            // }
-                        }).catch((error) => {
-                            console.log(error) //Logs a string: Error: Request failed with status code 404
+                            console.log(res); //测试laravel编辑中的表单验证
+                            if(res.data.code == 0) {
+                                this.editVisible = false;
+                                this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                            } else {
+                                this.$message.error(`修改第 ${this.idx+1} 失败`);
+                            }
+                        }).catch((error) => { //这里是捕获异常
+                            if (error.response) {
+                                console.log(error.response.data); //响应错误数据
+                                // console.log(error.response.status); //响应错误状态码
+                                // console.log(error.response.headers); //响应错误头
+                                if(error.response.data.message) {
+                                    this.$message.error(error.response.data.message);    
+                                } else {
+                                    this.$message.error(`系统出错~`);    
+                                }
+                            } 
                         });
                     } else {
                         console.log('error submit!!');
