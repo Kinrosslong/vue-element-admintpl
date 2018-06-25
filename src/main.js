@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import App from './App';
 import router from './router';
-import axios from 'axios';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';    // 默认主题
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
@@ -9,10 +8,14 @@ import "babel-polyfill";
 import "./assets/icon/iconfont.css"; //使用自己的icon图标
 
 Vue.use(ElementUI, { size: 'small' });
-Vue.prototype.$axios = axios; //axios不支持vue.use()方式声明使用 在其他vue组件中就可以this.$axios调用使用
+
+//封装axios请求方式
+import {get, post} from './http/index';
+Vue.prototype.get = get; //axios不支持vue.use()方式声明使用 在其他vue组件中就可以this.$axios调用使用
+Vue.prototype.post = post;
 
 
-//使用钩子函数对路由进行权限跳转
+// //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
     const role = localStorage.getItem('ms_username');
     if(!role && to.path !== '/login'){
