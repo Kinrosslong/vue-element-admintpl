@@ -138,11 +138,10 @@
                     pagesize: this.pagesize,
                     select_word: this.select_word 
                 }
-                this.$axios.get('/api/acticleList', {params:params}).then(res => {
+                this.get('acticleList', {params}).then(res => {
+                    // console.log(res);
                     this.total = res.data.total;
                     this.tableData = res.data.list;
-                }).catch(error => {
-                    console.log(error)
                 });
             },
 
@@ -201,26 +200,28 @@
                 //element ui 表单验证
                 this.$refs[form].validate((valid) => {
                     if (valid) { //验证通过
-                        this.$axios.post('/api/articleAdd', this.form).then(res => {
-                            console.log(res); //测试laravel编辑中的表单验证
-                            if(res.data.code == 0) {
-                                this.editVisible = false;
-                                this.$message.success(`修改第 ${this.idx+1} 行成功`);
-                            } else {
-                                this.$message.error(`修改第 ${this.idx+1} 失败`);
-                            }
-                        }).catch((error) => { //这里是捕获异常
-                            if (error.response) {
-                                console.log(error.response.data); //响应错误数据
-                                // console.log(error.response.status); //响应错误状态码
-                                // console.log(error.response.headers); //响应错误头
-                                if(error.response.data.message) {
-                                    this.$message.error(error.response.data.message);    
+                        if(this.form.id) {
+                            this.$axios.post('/api/articleEdit', this.form).then(res => {
+                                console.log(res);
+                                if(res.code == 0) {
+                                    this.editVisible = false;
+                                    this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                                    this.getData(1);
                                 } else {
-                                    this.$message.error(`系统出错~`);    
+                                    this.$message.error(`修改第 ${this.idx+1} 失败`);
                                 }
-                            } 
-                        });
+                            });
+                        } else {
+                            this.$axios.post('/api/articleAdd', this.form).then(res => {
+                                if(res.code == 0) {
+                                    this.editVisible = false;
+                                    this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                                    this.getData(1);
+                                } else {
+                                    this.$message.error(`修改第 ${this.idx+1} 失败`);
+                                }
+                            });
+                        }
                     } else {
                         console.log('error submit!!');
                         return false;
