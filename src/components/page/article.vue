@@ -15,7 +15,7 @@
                 </el-table-column>
                 <el-table-column prop="content" label="内容">
                 </el-table-column>
-                 <el-table-column prop="created_at" label="创建时间" width="150">
+                <el-table-column prop="created_at" label="创建时间" width="150">
                 </el-table-column>
                 <el-table-column label="操作" width="180">
                     <template slot-scope="scope">
@@ -141,8 +141,10 @@
                 
                 this.get('/acticleList', params).then(res => {
                     // console.log(res);
-                    this.total = res.total;
-                    this.tableData = res.list;
+                    if(res.code == 0) {
+                        this.total = res.data.total;
+                        this.tableData = res.data.list;
+                    }
                 });
             },
 
@@ -203,13 +205,13 @@
                     if (valid) { //验证通过
                         if(this.form.id) {
                             this.post('/articleEdit', this.form).then(res => {
-                                console.log(res);
+                                // console.log(res);
                                 if(res.code == 0) {
                                     this.editVisible = false;
                                     this.$message.success(`修改第 ${this.idx+1} 行成功`);
                                     this.getData(1);
-                                } else {
-                                    this.$message.error(`修改第 ${this.idx+1} 失败`);
+                                } else if(res.code == -1) {
+                                    this.$message.error(`修改第 ${this.idx+1} 行失败`);
                                 }
                             });
                         } else {
@@ -219,7 +221,7 @@
                                     this.$message.success(`修改第 ${this.idx+1} 行成功`);
                                     this.getData(1);
                                 } else {
-                                    this.$message.error(`修改第 ${this.idx+1} 失败`);
+                                    this.$message.error(`修改第 ${this.idx+1} 行失败`);
                                 }
                             });
                         }
