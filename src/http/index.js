@@ -31,7 +31,7 @@ axios.interceptors.response.use(response => {
 
     console.log(error.response); //响应错误数据
     if (error.response) {
-      //const data = error.response.data;
+      const data = error.response.data;
       // 根据返回的code值来做不同的处理(和后端约定)
       switch (error.response.status) {
         case 401:
