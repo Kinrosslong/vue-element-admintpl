@@ -81,6 +81,7 @@
             return {
                 url: './static/vuetable.json',
                 pagesize: 10,
+                pagenum : 1,
                 tableData: [],
                 total: 0,
                 cur_page: 1,
@@ -117,7 +118,7 @@
         },
         
         created() {
-            this.getData(1);
+            this.getData(this.pagenum);
         },
         computed: {
             //计算属性
@@ -128,8 +129,9 @@
 
             // 获取文章的模拟数据 这里的api 是node的请求地址
             getData(pagenum) {
+                this.pagenum = pagenum;
                 let params = {
-                    pagenum: pagenum, 
+                    pagenum: this.pagenum, 
                     pagesize: this.pagesize,
                     select_word: this.select_word 
                 }
