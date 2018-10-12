@@ -7,7 +7,7 @@ const path = require('path')
 module.exports = {
   dev: {
 
-    // Paths 配置跨域地址
+    // Paths 配置跨域地址 这里设置node环境跨域
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
